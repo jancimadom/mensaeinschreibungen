@@ -23,24 +23,17 @@ export default function Step0Verify() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailInput })
       });
-      // Wenn wir keine echte Datenbank/Backend laufen haben (für die Vorschau), können wir mocken
-      // Wir machen hier ein faires Fallback für Frontend-Demonstrationszwecke.
       if (!res.ok) {
-        console.warn("Backend API not reachable yet. Falling back to mock.");
-        setTimeout(() => {
-          setIsLoading(false);
-          setStep('code');
-        }, 1000);
+        const errorData = await res.json();
+        setError(`Fehler beim Senden der E-Mail: SMTP nicht konfiguriert oder falsches Passwort. Details: ${errorData.error || 'Serverfehler'}`);
+        setIsLoading(false);
         return;
       }
       setIsLoading(false);
       setStep('code');
     } catch (err) {
-       console.warn("Backend API not reachable. Falling back to mock.");
-       setTimeout(() => {
-         setIsLoading(false);
-         setStep('code');
-       }, 500);
+       setError("Netzwerkfehler. Die API konnte nicht erreicht werden.");
+       setIsLoading(false);
     }
   };
 
