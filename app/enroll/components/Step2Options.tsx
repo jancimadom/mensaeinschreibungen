@@ -8,10 +8,9 @@ export default function Step2Options() {
 
   const isFirstGrade = data.grade === "1";
 
-  const options = isFirstGrade 
     ? [
         { label: "Mensa (Arma)", value: "mensa" },
-        { label: "Brotmensa (Essen von zu Hause mitgebracht)", value: "brotmensa" },
+        { label: "Brotmensa (nur 1. Klassen)", value: "brotmensa" },
         { label: "Verlassen der Schule in Eigenverantwortung", value: "heim" },
       ]
     : [
@@ -39,7 +38,7 @@ export default function Step2Options() {
 
       <div style={{ marginBottom: "2rem", padding: "1rem", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.9rem", color: "#334155" }}>
         <h3 style={{ marginTop: 0, color: "var(--primary)", fontSize: "1.1rem" }}>Informationen zur Schulausspeisung Mittelschule Röd - Schuljahr 2026/27</h3>
-        <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0 0 0", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0 0 0", display: "flex", flexDirection: "column", gap: "0.5rem", wordBreak: "break-word" }}>
           <li>In den Mittelschulen können nur jene Schüler/Schülerinnen den Schulausspeisungsdienst beanspruchen, welche am Nachmittag einer schulischen Tätigkeit nachgehen. Die Schulausspeisung wird ausschließlich am Dienstag und am Donnerstag angeboten.</li>
           <li>Der Antrag ist in der Mittelschule „Dr. Josef Röd“ bis spätestens 22. Mai 2026 einzureichen.</li>
           <li>Das Mittagessen besteht aus einer warmen Hauptspeise mit Gemüse und/oder Salat sowie einer Nachspeise in Form von Obst. Die Stadtgemeinde Bruneck ist bemüht, den Kindern ein gesundes, abwechslungsreiches und frisches Essen anzubieten.<br/>Der Menüplan wird auf folgender Internetseite veröffentlicht: <strong>https://www.gemeinde.bruneck.bz.it/de/Verwaltung/Gemeindeaemter/Bekanntmachungen/Schulausspeisung</strong> (Änderungen vorbehalten).<br/>Spezielle Diätanforderungen werden nur bei Vorlage eines medizinisch, wissenschaftlich fundierten ärztlichen Zeugnisses, ausgestellt vom Hausarzt oder Kinderarzt, berücksichtigt.</li>

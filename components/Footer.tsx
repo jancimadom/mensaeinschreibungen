@@ -15,9 +15,7 @@ export const Footer = () => {
                     {/* Branding & Info Section */}
                     <div className="footer-branding">
                         <div className="footer-brand-row">
-                            <span className="footer-brand-main">Mensaeinschreibungen</span>
-                            <span className="footer-dot" />
-                            <span className="footer-brand-sub">Modernes Schulmanagement</span>
+                            <span className="footer-brand-main">Meldung Mittagspause</span>
                         </div>
                         <div className="footer-info-row">
                             <span>© 2026 Jan Cimadom</span>

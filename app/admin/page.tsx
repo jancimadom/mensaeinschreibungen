@@ -75,12 +75,6 @@ export default async function AdminPage() {
         <h3 style={{ marginBottom: "1rem" }}>Übersicht (Schuljahr 26/27)</h3>
         
         <EnrollmentList />
-        
-        <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
-           <button style={{ padding: "0.75rem 1.5rem", background: "var(--primary)", color: "white", borderRadius: "8px", border: "none", fontWeight: "bold", cursor: "pointer" }}>
-             Als CSV exportieren (Excel)
-           </button>
-        </div>
       </div>
     </div>
   )

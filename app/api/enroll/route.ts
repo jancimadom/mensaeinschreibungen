@@ -15,6 +15,17 @@ export async function POST(req: Request) {
       });
     }
 
+    // Date Format from YYYY-MM-DD to DD.MM.YYYY
+    let formattedBirthDate = data.birthDate;
+    if (formattedBirthDate && formattedBirthDate.includes("-")) {
+      const parts = formattedBirthDate.split("-");
+      if (parts.length === 3) {
+        formattedBirthDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
+      }
+    }
+
+    const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
     const emailHtml = `
       <div style="font-family: sans-serif; color: #333;">
         <h2>Neue Mensa-Anmeldung 2026/27</h2>
@@ -22,12 +33,12 @@ export async function POST(req: Request) {
         <p><strong>E-Mail (Eltern):</strong> ${data.email}</p>
         
         <h3>Tage & Optionen</h3>
-        <p>Dienstag: ${data.tuesdayOption}</p>
-        <p>Donnerstag: ${data.thursdayOption}</p>
+        <p>Dienstag: ${capitalize(data.tuesdayOption)}</p>
+        <p>Donnerstag: ${capitalize(data.thursdayOption)}</p>
         
         ${data.tuesdayOption === "mensa" || data.thursdayOption === "mensa" ? `
         <h3>Gemeindefeld (Persönliche Daten)</h3>
-        <p><strong>Geboren:</strong> ${data.birthDate} in ${data.birthPlace}</p>
+        <p><strong>Geboren:</strong> ${formattedBirthDate} in ${data.birthPlace}</p>
         <p><strong>Steuernummer Kind:</strong> ${data.taxCode}</p>
         <p><strong>Steuernummer Elternteil (erhält Rechnung):</strong> ${data.parentTaxCode || '-'}</p>
         <p><strong>Adresse:</strong> ${data.address}</p>

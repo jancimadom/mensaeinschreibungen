@@ -100,7 +100,6 @@ export default function Step0Verify() {
               placeholder="1234"
               style={{ fontSize: "1.5rem", letterSpacing: "0.25rem", textAlign: "center" }}
             />
-            <p style={{fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.5rem", textAlign: "center"}}>*Für den Demo-Zweck wird aktuell jeder 4-stellige Code akzeptiert.</p>
           </div>
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.buttonGroup}>

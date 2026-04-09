@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import ExportModal from './ExportModal';
 
 export type EnrollmentDoc = {
   id: string;
@@ -21,12 +22,21 @@ export default function EnrollmentList() {
 
   useEffect(() => {
     try {
-      const q = query(collection(db, 'enrollments'), orderBy('createdAt', 'desc'));
+      // Entferne orderBy, um Index-Fehler in Firestore zu vermeiden.
+      const q = query(collection(db, 'enrollments'));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const data = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as EnrollmentDoc[];
+        
+        // Lokales Sortieren nach Datum absteigend (neueste zuerst)
+        data.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+          const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+          return timeB - timeA;
+        });
+
         setEnrollments(data);
         setLoading(false);
       }, (err) => {
@@ -85,6 +95,9 @@ export default function EnrollmentList() {
           )}
         </tbody>
       </table>
+      <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end" }}>
+        <ExportModal enrollments={enrollments} />
+      </div>
     </div>
   );
 }
