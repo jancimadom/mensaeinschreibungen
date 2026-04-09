@@ -33,16 +33,19 @@ export default function Step4Summary() {
       });
 
       if (!response.ok) {
-         console.warn("Backend missing, showing success for demo");
-         setTimeout(() => router.push('/enroll/success'), 500);
+         const errorData = await response.json().catch(() => ({}));
+         console.error("Backend Error:", errorData);
+         setError(errorData.error || "Fehler beim Senden. Bitte Server-Logs oder Vercel kontrollieren.");
+         setIsSubmitting(false);
          return;
       }
       
       router.push('/enroll/success');
 
-    } catch (err) {
-      console.warn("Fallback success due to missing backend");
-      setTimeout(() => router.push('/enroll/success'), 500);
+    } catch (err: any) {
+      console.error("Fetch Error:", err);
+      setError("Verbindung zum Server fehlgeschlagen. " + err.message);
+      setIsSubmitting(false);
     }
   };
 
