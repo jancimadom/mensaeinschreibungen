@@ -35,6 +35,11 @@ export default async function AdminPage() {
             Mit Google anmelden
           </button>
         </form>
+        <div style={{ marginTop: "1.5rem" }}>
+          <Link href="/" style={{ color: "var(--text-muted)", textDecoration: "underline", fontSize: "0.95rem" }}>
+            Zurück zur Startseite
+          </Link>
+        </div>
       </div>
     )
   }
