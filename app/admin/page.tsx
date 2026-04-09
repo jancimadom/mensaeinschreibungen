@@ -1,4 +1,6 @@
 import { auth, signIn, signOut } from "@/auth";
+import Link from 'next/link';
+import EnrollmentList from "./components/EnrollmentList";
 
 export const metadata = {
   title: "Admin-Bereich | Mensaeinschreibungen",
@@ -47,6 +49,9 @@ export default async function AdminPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border)" }}>
         <h2 style={{ fontSize: "1.75rem", color: "var(--primary)", margin: 0 }}>Verwaltung Mensaanmeldungen</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+          <Link href="/" style={{ padding: "0.5rem 1rem", borderRadius: "8px", backgroundColor: "#f1f5f9", color: "var(--primary)", textDecoration: "none", fontWeight: "600", transition: "background-color 0.2s" }}>
+            Zur Startseite
+          </Link>
           <span style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
             Angemeldet als <strong>{session.user.email}</strong>
           </span>
@@ -63,33 +68,8 @@ export default async function AdminPage() {
       
       <div style={{ backgroundColor: "white", padding: "2rem", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
         <h3 style={{ marginBottom: "1rem" }}>Übersicht (Schuljahr 26/27)</h3>
-        <p style={{ color: "var(--text-muted)", marginBottom: "2rem", lineHeight: "1.6" }}>
-          In der finalen Umgebung (auf Vercel) wird das Dashboard hier mit der Firestore-Datenbank verbunden. 
-          Wenn Anmeldungen eintreffen, erscheinen sie sofort in dieser Ansicht.
-        </p>
-
-        {/* Platzhalter-Tabelle / Client-Komponente würde hier geladen werden */}
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead>
-              <tr style={{ backgroundColor: "var(--secondary)", borderBottom: "2px solid var(--border)" }}>
-                <th style={{ padding: "1rem" }}>Nachname</th>
-                <th style={{ padding: "1rem" }}>Vorname</th>
-                <th style={{ padding: "1rem" }}>Klasse</th>
-                <th style={{ padding: "1rem" }}>Dienstag</th>
-                <th style={{ padding: "1rem" }}>Donnerstag</th>
-                <th style={{ padding: "1rem" }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colSpan={6} style={{ padding: "3rem", textAlign: "center", fontStyle: "italic", color: "var(--text-muted)", backgroundColor: "#f8fafc" }}>
-                  Tabelle zur Echtzeit-Anzeige der Firestore-Daten ist vorbereitet. (Verbindung wird nach Deployment aktiv aufgebaut).
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        
+        <EnrollmentList />
         
         <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
            <button style={{ padding: "0.75rem 1.5rem", background: "var(--primary)", color: "white", borderRadius: "8px", border: "none", fontWeight: "bold", cursor: "pointer" }}>

@@ -10,9 +10,9 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendMail = async (to: string, subject: string, text: string, html: string) => {
+export const sendMail = async (to: string, subject: string, text: string, html: string, attachments?: any[]) => {
   if (!process.env.SMTP_USER) {
-    console.log("Mocking email send (no SMTP_USER configured):", { to, subject });
+    console.log("Mocking email send (no SMTP_USER configured):", { to, subject, hasAttachments: !!attachments?.length });
     return true;
   }
   return await transporter.sendMail({
@@ -21,5 +21,6 @@ export const sendMail = async (to: string, subject: string, text: string, html: 
     subject,
     text,
     html,
+    attachments,
   });
 };

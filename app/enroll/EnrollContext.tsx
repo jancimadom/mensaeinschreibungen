@@ -20,9 +20,11 @@ export type EnrollmentData = {
   birthDate: string;
   birthPlace: string;
   taxCode: string;
+  parentTaxCode: string;
   address: string;
   phone: string;
   dietaryNeeds: string;
+  medicalCertificate: { name: string, type: string, size: number, base64: string } | null;
 };
 
 const defaultData: EnrollmentData = {
@@ -37,9 +39,11 @@ const defaultData: EnrollmentData = {
   birthDate: "",
   birthPlace: "",
   taxCode: "",
+  parentTaxCode: "",
   address: "",
   phone: "",
   dietaryNeeds: "",
+  medicalCertificate: null,
 };
 
 type EnrollContextType = {

@@ -7,7 +7,8 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "dummy") {
+    // Always save to Firestore if configured
+    if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
       await addDoc(collection(db, 'enrollments'), {
         ...data,
         createdAt: serverTimestamp(),
@@ -24,23 +25,37 @@ export async function POST(req: Request) {
         <p>Dienstag: ${data.tuesdayOption}</p>
         <p>Donnerstag: ${data.thursdayOption}</p>
         
+        ${data.tuesdayOption === "mensa" || data.thursdayOption === "mensa" ? `
         <h3>Gemeindefeld (Persönliche Daten)</h3>
         <p><strong>Geboren:</strong> ${data.birthDate} in ${data.birthPlace}</p>
-        <p><strong>Steuernummer:</strong> ${data.taxCode}</p>
+        <p><strong>Steuernummer Kind:</strong> ${data.taxCode}</p>
+        <p><strong>Steuernummer Elternteil (erhält Rechnung):</strong> ${data.parentTaxCode || '-'}</p>
         <p><strong>Adresse:</strong> ${data.address}</p>
         <p><strong>Telefon:</strong> ${data.phone}</p>
+        ` : '<p><i>Keine Mensa-Tage ausgewählt (Gemeindedaten übersprungen)</i></p>'}
         
         <h3>Spezielles</h3>
         <p>${data.dietaryNeeds || "Keine besonderen Diätanforderungen"}</p>
       </div>
     `;
 
-    // Mail an die Gemeinde / Erika Innerbichler
+    const attachments = [];
+    if (data.medicalCertificate?.base64) {
+      const encodedStr = data.medicalCertificate.base64.split(',')[1] || data.medicalCertificate.base64;
+      attachments.push({
+        filename: data.medicalCertificate.name || 'aerztliches_zeugnis',
+        content: encodedStr,
+        encoding: 'base64',
+      });
+    }
+
+    // Mail an die Schule
     await sendMail(
       "erika.innerbichler@schule.suedtirol.it", 
       `Mensa ANMELDUNG - ${data.lastName} ${data.firstName}`, 
       "Neue Anmeldung erhalten", 
-      emailHtml
+      emailHtml,
+      attachments
     );
     
     // Bestätigung an die Eltern
@@ -48,7 +63,7 @@ export async function POST(req: Request) {
       data.email, 
       `Bestätigung Mensaanmeldung - ${data.firstName} ${data.lastName}`, 
       "Ihre Anmeldung wurde übermittelt.", 
-      `<p>Ihre Daten wurden erfolgreich an die Gemeinde Bruneck übermittelt.</p>` + emailHtml
+      `<p>Ihre Daten wurden erfolgreich an die Schule übermittelt.</p>` + emailHtml
     );
 
     return NextResponse.json({ success: true });

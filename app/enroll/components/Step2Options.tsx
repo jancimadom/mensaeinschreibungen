@@ -4,7 +4,7 @@ import { useEnroll } from '../EnrollContext';
 import styles from '../enroll.module.css';
 
 export default function Step2Options() {
-  const { data, updateData, nextStep, prevStep } = useEnroll();
+  const { data, updateData, nextStep, prevStep, setStep } = useEnroll();
 
   const isFirstGrade = data.grade === "1";
 
@@ -21,7 +21,11 @@ export default function Step2Options() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    nextStep();
+    if (data.tuesdayOption !== "mensa" && data.thursdayOption !== "mensa") {
+      setStep(4);
+    } else {
+      nextStep();
+    }
   };
 
   return (
@@ -32,6 +36,19 @@ export default function Step2Options() {
       <p style={{ marginBottom: "1.5rem", color: "var(--text-muted)" }}>
         Die Schulausspeisung wird ausschließlich am Dienstag und am Donnerstag angeboten. Bitte wählen Sie für jeden Tag eine Option.
       </p>
+
+      <div style={{ marginBottom: "2rem", padding: "1rem", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.9rem", color: "#334155" }}>
+        <h3 style={{ marginTop: 0, color: "var(--primary)", fontSize: "1.1rem" }}>Informationen zur Schulausspeisung Mittelschule Röd - Schuljahr 2026/27</h3>
+        <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0 0 0", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <li>In den Mittelschulen können nur jene Schüler/Schülerinnen den Schulausspeisungsdienst beanspruchen, welche am Nachmittag einer schulischen Tätigkeit nachgehen. Die Schulausspeisung wird ausschließlich am Dienstag und am Donnerstag angeboten.</li>
+          <li>Der Antrag ist in der Mittelschule „Dr. Josef Röd“ bis spätestens 22. Mai 2026 einzureichen.</li>
+          <li>Das Mittagessen besteht aus einer warmen Hauptspeise mit Gemüse und/oder Salat sowie einer Nachspeise in Form von Obst. Die Stadtgemeinde Bruneck ist bemüht, den Kindern ein gesundes, abwechslungsreiches und frisches Essen anzubieten.<br/>Der Menüplan wird auf folgender Internetseite veröffentlicht: <strong>https://www.gemeinde.bruneck.bz.it/de/Verwaltung/Gemeindeaemter/Bekanntmachungen/Schulausspeisung</strong> (Änderungen vorbehalten).<br/>Spezielle Diätanforderungen werden nur bei Vorlage eines medizinisch, wissenschaftlich fundierten ärztlichen Zeugnisses, ausgestellt vom Hausarzt oder Kinderarzt, berücksichtigt.</li>
+          <li>Die Kosten pro Mittagessen für die Schüler betragen 4,50 €. Es besteht die Möglichkeit, eine Tarifreduzierung zu beantragen. Die weiteren Informationen dazu werden im Herbst mitgeteilt.</li>
+          <li>Für die Schulausspeisung wird ein Fixbetrag pro Schuljahr in Rechnung gestellt, kurzfristige Abwesenheiten können demzufolge nicht berücksichtigt werden. Herbst- und Maiausflug sowie andere freie Tage werden nicht berechnet. Im Schuljahr 2026/27 werden circa 35 Dienstage und 35 Donnerstage berechnet.</li>
+          <li>Die Berechnung der Kosten nimmt die Dienststelle Steuern und Gebühren der Stadtgemeinde Bruneck vor. Der Beitrag wird einmal im Schuljahr eingehoben. Die Rechnungsstellung erfolgt im Frühjahr 2027.</li>
+          <li>Anmeldungen und Abmeldungen zur Schulausspeisung sind an die Stadtgemeinde Bruneck, Dienststelle Steuern und Gebühren, zu richten. Für Abmeldungen nach dem 1. Oktober 2026 wird eine Bearbeitungsgebühr von 20,00 € verrechnet.</li>
+        </ol>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "2rem" }}>
