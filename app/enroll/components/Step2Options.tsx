@@ -8,6 +8,7 @@ export default function Step2Options() {
 
   const isFirstGrade = data.grade === "1";
 
+  const options = isFirstGrade 
     ? [
         { label: "Mensa (Arma)", value: "mensa" },
         { label: "Brotmensa (nur 1. Klassen)", value: "brotmensa" },
