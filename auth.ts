@@ -22,15 +22,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Entweder über Vercel Environment Variable (ADMIN_EMAILS="mail1,mail2") oder direkt im Code
         const envAdmins = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim().toLowerCase()) : [];
         const codeAdmins: string[] = [
-          // "beispiel@sspbruneck1.it", <-- Fügen Sie hier Ihre E-Mail ein falls Sie kein Env nutzen
+          "jan.cimadom@sspbruneck1.it",
+          "erika.innerbichler@sspbruneck1.it",
         ];
         
         const whitelist = [...envAdmins, ...codeAdmins];
 
+        console.log(`[Auth] Sign-in attempt: ${email}, Whitelist:`, whitelist);
+
         // Wenn die Whitelist leer ist, lassen wir vorerst alle der Domain durch (als Schutz vor versehentlichem Aussperren).
         // Sobald E-Mails definiert sind, wird streng geprüft.
         if (whitelist.length > 0) {
-          return whitelist.includes(email.toLowerCase());
+          const isAllowed = whitelist.includes(email.toLowerCase());
+          if (!isAllowed) {
+            console.warn(`[Auth] Access denied for ${email}. Not in whitelist.`);
+          }
+          return isAllowed;
         }
 
         return true;
