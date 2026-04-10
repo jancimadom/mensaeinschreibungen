@@ -16,7 +16,7 @@ export default function Step4Summary() {
     switch (val) {
       case "mensa": return "Mensa (Arma)";
       case "brotmensa": return "Brotmensa (Essen von zu Hause)";
-      case "heim": return "Verlassen der Schule";
+      case "heim": return "Verlassen der Schule in Eigenverantwortung";
       default: return "-";
     }
   };

@@ -66,7 +66,7 @@ export default function EnrollmentList() {
     switch (val) {
       case "mensa": return "Mensa (Arma)";
       case "brotmensa": return "Brotmensa";
-      case "heim": return "Heim (Verlassen)";
+      case "heim": return "Verlassen der Schule in Eigenverantwortung";
       default: return val;
     }
   };

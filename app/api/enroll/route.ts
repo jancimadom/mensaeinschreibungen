@@ -24,17 +24,24 @@ export async function POST(req: Request) {
       }
     }
 
-    const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+        const getOptionLabel = (val: string) => {
+          switch (val) {
+            case "mensa": return "Mensa (Arma)";
+            case "brotmensa": return "Brotmensa";
+            case "heim": return "Verlassen der Schule in Eigenverantwortung";
+            default: return val;
+          }
+        };
 
-    const emailHtml = `
-      <div style="font-family: sans-serif; color: #333;">
-        <h2>Neue Mensa-Anmeldung 2026/27</h2>
-        <p><strong>Schüler:</strong> ${data.firstName} ${data.lastName} (${data.grade}. Klasse, Zug ${data.zug})</p>
-        <p><strong>E-Mail (Eltern):</strong> ${data.email}</p>
-        
-        <h3>Tage & Optionen</h3>
-        <p>Dienstag: ${capitalize(data.tuesdayOption)}</p>
-        <p>Donnerstag: ${capitalize(data.thursdayOption)}</p>
+        const emailHtml = `
+          <div style="font-family: sans-serif; color: #333;">
+            <h2>Neue Mensa-Anmeldung 2026/27</h2>
+            <p><strong>Schüler:</strong> ${data.firstName} ${data.lastName} (${data.grade}. Klasse, Zug ${data.zug})</p>
+            <p><strong>E-Mail (Eltern):</strong> ${data.email}</p>
+            
+            <h3>Tage & Optionen</h3>
+            <p>Dienstag: ${getOptionLabel(data.tuesdayOption)}</p>
+            <p>Donnerstag: ${getOptionLabel(data.thursdayOption)}</p>
         
         ${data.tuesdayOption === "mensa" || data.thursdayOption === "mensa" ? `
         <h3>Gemeindefeld (Persönliche Daten)</h3>

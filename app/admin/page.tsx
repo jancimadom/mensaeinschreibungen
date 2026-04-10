@@ -1,6 +1,6 @@
 import { auth, signIn, signOut } from "@/auth";
 import Link from 'next/link';
-import EnrollmentList from "./components/EnrollmentList";
+import AdminDashboard from "./components/AdminDashboard";
 
 export const metadata = {
   title: "Admin-Bereich | Mensaeinschreibungen",
@@ -44,11 +44,6 @@ export default async function AdminPage() {
     )
   }
 
-  // Da node.js lokal fehlt, bauen wir eine Vorlage für die Tabelle ein. 
-  // Um die Firestore-Werte im echten Betrieb in Echtzeit zu sehen, würde man hier 
-  // eine Client-Componente mit "use client" rendern, die "onSnapshot()" nutzt, oder
-  // server-side fetch durchführen, falls `firebase-admin` genutzt wird.
-
   return (
     <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border)" }}>
@@ -71,11 +66,7 @@ export default async function AdminPage() {
         </div>
       </div>
       
-      <div style={{ backgroundColor: "white", padding: "2rem", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
-        <h3 style={{ marginBottom: "1rem" }}>Übersicht (Schuljahr 26/27)</h3>
-        
-        <EnrollmentList />
-      </div>
+      <AdminDashboard />
     </div>
   )
 }
