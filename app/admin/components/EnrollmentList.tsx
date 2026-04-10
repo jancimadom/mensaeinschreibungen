@@ -26,6 +26,9 @@ export type EnrollmentDoc = {
 };
 
 export default function EnrollmentList() {
+  const [enrollments, setEnrollments] = useState<EnrollmentDoc[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
