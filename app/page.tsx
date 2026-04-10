@@ -13,7 +13,6 @@ export default function Home() {
             <li><strong>Verifizierung:</strong> Bestätigen Sie Ihre E-Mail-Adresse.</li>
             <li><strong>Schülerdaten:</strong> Geben Sie die Daten Ihres Kindes ein.</li>
             <li><strong>Tage wählen:</strong> Mensa, Brotmensa (nur 1. Klassen) oder Verlassen der Schule</li>
-            <li><strong>Mensa-Anmeldung:</strong> Ausfüllen des Gemeindeformulars.</li>
           </ol>
           <Link href="/enroll" className={styles.ctaButton}>
             Jetzt Anmeldung starten
