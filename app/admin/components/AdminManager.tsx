@@ -84,6 +84,11 @@ export default function AdminManager() {
     );
   }
 
+  const superAdmins = [
+    "jan.cimadom@sspbruneck1.it",
+    "erika.innerbichler@sspbruneck1.it"
+  ];
+
   return (
     <div style={{ maxWidth: '800px' }}>
       <div style={{ marginBottom: '2rem', padding: '1.5rem', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
@@ -141,15 +146,31 @@ export default function AdminManager() {
           <thead>
             <tr style={{ backgroundColor: '#f1f5f9', textAlign: 'left', fontSize: '0.9rem' }}>
               <th style={{ padding: '1rem' }}>E-Mail Adresse</th>
-              <th style={{ padding: '1rem' }}>Status</th>
+              <th style={{ padding: '1rem' }}>Rolle / Status</th>
               <th style={{ padding: '1rem', textAlign: 'right' }}>Aktionen</th>
             </tr>
           </thead>
           <tbody>
-            {admins.length === 0 ? (
+            {/* Super Admins (Failsafe) */}
+            {superAdmins.map((email) => (
+              <tr key={email} style={{ borderTop: '1px solid #f1f5f9', backgroundColor: '#fffbeb' }}>
+                <td style={{ padding: '1rem', fontWeight: '500' }}>{email}</td>
+                <td style={{ padding: '1rem' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.6rem', backgroundColor: '#fef3c7', color: '#92400e', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: '600', border: '1px solid #fde68a' }}>
+                    <ShieldCheck size={14} /> Super Admin
+                  </span>
+                </td>
+                <td style={{ padding: '1rem', textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic' }}>System-Admin</span>
+                </td>
+              </tr>
+            ))}
+
+            {/* Dynamische Admins */}
+            {admins.length === 0 && superAdmins.length === 0 ? (
               <tr>
                 <td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>
-                  Keine dynamischen Admins gefunden. (Nur statische Failsafe-Admins aktiv)
+                  Keine Admins gefunden.
                 </td>
               </tr>
             ) : (
@@ -157,7 +178,7 @@ export default function AdminManager() {
                 <tr key={admin.id} style={{ borderTop: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '1rem' }}>{admin.email}</td>
                   <td style={{ padding: '1rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: '#f0fdf4', color: '#16a34a', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: '500' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.6rem', backgroundColor: '#f0fdf4', color: '#16a34a', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: '500' }}>
                       <ShieldCheck size={14} /> Aktiv
                     </span>
                   </td>
@@ -177,8 +198,8 @@ export default function AdminManager() {
         </table>
       </div>
 
-      <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
-        Hinweis: Die Notfall-Admins (Failsafe) aus der Konfiguration sind hier nicht aufgelistet und können nicht gelöscht werden.
+      <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <AlertCircle size={14} /> Super Admins sind fest im System verankert und können nicht über dieses UI gelöscht werden.
       </div>
     </div>
   );
