@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, onSnapshot, query, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import ExportModal from './ExportModal';
 
 export type EnrollmentDoc = {
@@ -76,7 +77,6 @@ export default function EnrollmentList() {
   const handleArchiveAll = async () => {
     if (!window.confirm("Möchten Sie wirklich ALLE aktuellen Ansuchen archivieren?")) return;
     const active = enrollments.filter(e => !e.archived);
-    const { doc, updateDoc } = await import('firebase/firestore');
     for (const en of active) {
       await updateDoc(doc(db, 'enrollments', en.id), { archived: true });
     }
@@ -86,11 +86,29 @@ export default function EnrollmentList() {
   const handleRestoreAll = async () => {
     if (!window.confirm("Möchten Sie ALLE archivierten Ansuchen wieder herstellen?")) return;
     const archived = enrollments.filter(e => e.archived);
-    const { doc, updateDoc } = await import('firebase/firestore');
     for (const en of archived) {
       await updateDoc(doc(db, 'enrollments', en.id), { archived: false });
     }
     alert(`${archived.length} Ansuchen wiederhergestellt.`);
+  };
+
+  const handleToggleArchive = async (id: string, currentStatus: boolean) => {
+    try {
+      await updateDoc(doc(db, 'enrollments', id), { archived: !currentStatus });
+    } catch (err) {
+      console.error("Error toggling archive status:", err);
+      alert("Fehler beim Ändern des Archivierungsstatus.");
+    }
+  };
+
+  const handleDelete = async (id: string, firstName: string, lastName: string) => {
+    if (!window.confirm(`Möchten Sie das Ansuchen von ${firstName} ${lastName} wirklich unwiderruflich löschen?`)) return;
+    try {
+      await deleteDoc(doc(db, 'enrollments', id));
+    } catch (err) {
+      console.error("Error deleting enrollment:", err);
+      alert("Fehler beim Löschen des Ansuchens.");
+    }
   };
 
   if (loading) {
@@ -166,6 +184,7 @@ export default function EnrollmentList() {
               <th style={{ padding: "0.75rem" }}>Adresse/Tel</th>
               <th style={{ padding: "0.75rem" }}>Besonderes</th>
               <th style={{ padding: "0.75rem" }}>Datum</th>
+              <th style={{ padding: "0.75rem", textAlign: "center" }}>Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -200,6 +219,42 @@ export default function EnrollmentList() {
                     )}
                   </td>
                   <td style={{ padding: "0.75rem" }}>{enroll.createdAt?.toDate ? enroll.createdAt.toDate().toLocaleDateString('de-DE') : '-'}</td>
+                  <td style={{ padding: "0.75rem" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                      <button
+                        onClick={() => handleToggleArchive(enroll.id, !!enroll.archived)}
+                        title={enroll.archived ? "Wiederherstellen" : "Archivieren"}
+                        style={{
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          border: "1px solid #e2e8f0",
+                          backgroundColor: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          color: "var(--primary)"
+                        }}
+                      >
+                        {enroll.archived ? <ArchiveRestore size={16} /> : <Archive size={16} />}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(enroll.id, enroll.firstName, enroll.lastName)}
+                        title="Löschen"
+                        style={{
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          border: "1px solid #fecaca",
+                          backgroundColor: "#fef2f2",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          color: "#dc2626"
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
