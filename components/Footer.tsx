@@ -17,18 +17,18 @@ export const Footer = () => {
                         <div className="footer-brand-row">
                             <span className="footer-brand-main">Meldung Mittagspause</span>
                         </div>
-                        <div className="footer-info-row">
+                        <div className="flex items-center justify-center md:justify-start gap-2 text-[9px] text-zinc-500/70 font-medium">
                             <span>© 2026 Jan Cimadom</span>
-                            <span style={{ color: '#d4d4d8' }}>|</span>
-                            <span>Maria Teresa Riedl 10, 39031 Bruneck</span>
+                            <span className="text-zinc-300">|</span>
+                            <span>Technische Umsetzung: Jan Cimadom</span>
                         </div>
                     </div>
 
                     {/* Navigation Section */}
-                    <nav className="footer-nav">
+                    <nav className="flex items-center gap-6">
                         {[
                             { name: 'Impressum', href: '/impressum' },
-                            { name: 'Datenschutz', href: '/datenschutz' },
+                            { name: 'Datenschutz', href: 'https://www.sspbruneck1.it/privacy/' },
                             { name: 'Kontakt', href: '/kontakt' },
                             { name: 'Über mich', href: '/ueber-uns' }
                         ].map((link) => (
