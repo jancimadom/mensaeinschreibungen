@@ -46,6 +46,7 @@ export default function ImpressumPage() {
             <div style={{ marginBottom: '2rem' }}>
               <h2 style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#f59e0b' }}>Kontakt</h2>
               <p style={{ fontSize: '1.125rem', fontWeight: 700, color: '#111827', marginTop: '0.5rem' }}>
+                E-Mail: jan@gimole.com<br />
                 PEC: SSP.Bruneck1@pec.prov.bz.it<br />
                 Schulführungskraft: Stefan Keim
               </p>
