@@ -20,6 +20,8 @@ export const Footer = () => {
                         <div className="footer-info-row">
                             <span>© 2026 Jan Cimadom</span>
                             <span style={{ color: '#d4d4d8' }}>|</span>
+                            <span>jan@gimole.com</span>
+                            <span style={{ color: '#d4d4d8' }}>|</span>
                             <span>Technische Umsetzung: Jan Cimadom</span>
                         </div>
                     </div>
