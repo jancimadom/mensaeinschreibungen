@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { Archive, ArchiveRestore, Trash2 } from 'lucide-react';
+import { Archive, ArchiveRestore, Trash2, Pencil } from 'lucide-react';
 import ExportModal from './ExportModal';
+import EditEnrollmentModal from './EditEnrollmentModal';
 
 export type EnrollmentDoc = {
   id: string;
@@ -31,6 +32,7 @@ export default function EnrollmentList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [editingEnrollment, setEditingEnrollment] = useState<EnrollmentDoc | null>(null);
 
   useEffect(() => {
     try {
@@ -222,6 +224,22 @@ export default function EnrollmentList() {
                   <td style={{ padding: "0.75rem" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
                       <button
+                        onClick={() => setEditingEnrollment(enroll)}
+                        title="Bearbeiten"
+                        style={{
+                          padding: "0.4rem",
+                          borderRadius: "4px",
+                          border: "1px solid #e2e8f0",
+                          backgroundColor: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          color: "#2563eb"
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
                         onClick={() => handleToggleArchive(enroll.id, !!enroll.archived)}
                         title={enroll.archived ? "Wiederherstellen" : "Archivieren"}
                         style={{
@@ -261,6 +279,13 @@ export default function EnrollmentList() {
           </tbody>
         </table>
       </div>
+
+      {editingEnrollment && (
+        <EditEnrollmentModal 
+          enrollment={editingEnrollment} 
+          onClose={() => setEditingEnrollment(null)} 
+        />
+      )}
     </div>
   );
 }
