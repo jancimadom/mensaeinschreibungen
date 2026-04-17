@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { Archive, ArchiveRestore, Trash2, Pencil } from 'lucide-react';
+import { Archive, ArchiveRestore, Trash2, Pencil, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import ExportModal from './ExportModal';
 import EditEnrollmentModal from './EditEnrollmentModal';
 
@@ -33,6 +33,9 @@ export default function EnrollmentList() {
   const [error, setError] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [editingEnrollment, setEditingEnrollment] = useState<EnrollmentDoc | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortField, setSortField] = useState<'name' | 'date'>('date');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     try {
@@ -74,7 +77,35 @@ export default function EnrollmentList() {
     }
   };
 
-  const filteredEnrollments = enrollments.filter(e => !!e.archived === showArchived);
+  const handleSort = (field: 'name' | 'date') => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const filteredEnrollments = enrollments
+    .filter(e => !!e.archived === showArchived)
+    .filter(e => {
+      const search = searchTerm.toLowerCase();
+      return e.firstName.toLowerCase().includes(search) || 
+             e.lastName.toLowerCase().includes(search) ||
+             e.email.toLowerCase().includes(search) ||
+             (e.grade + e.zug).toLowerCase().includes(search);
+    })
+    .sort((a, b) => {
+      if (sortField === 'name') {
+        const nameA = `${a.lastName} ${a.firstName}`.toLowerCase();
+        const nameB = `${b.lastName} ${b.firstName}`.toLowerCase();
+        return sortDirection === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+      } else {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        return sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
+      }
+    });
 
   const handleArchiveAll = async () => {
     if (!window.confirm("Möchten Sie wirklich ALLE aktuellen Ansuchen archivieren?")) return;
@@ -149,6 +180,25 @@ export default function EnrollmentList() {
           </button>
         </div>
 
+        <div style={{ position: "relative", flex: "1", maxWidth: "400px" }}>
+          <Search size={18} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#64748b" }} />
+          <input 
+            type="text"
+            placeholder="Schüler, E-Mail oder Klasse suchen..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.6rem 1rem 0.6rem 2.5rem",
+              borderRadius: "10px",
+              border: "1px solid #e2e8f0",
+              fontSize: "0.9rem",
+              outline: "none",
+              transition: "border-color 0.2s, box-shadow 0.2s"
+            }}
+          />
+        </div>
+
         <div style={{ display: "flex", gap: "1rem" }}>
           {!showArchived ? (
             <button 
@@ -175,7 +225,15 @@ export default function EnrollmentList() {
         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
           <thead>
             <tr style={{ backgroundColor: "var(--secondary)", borderBottom: "2px solid var(--border)" }}>
-              <th style={{ padding: "0.75rem" }}>Schüler</th>
+              <th 
+                onClick={() => handleSort('name')}
+                style={{ padding: "0.75rem", cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  Schüler 
+                  {sortField === 'name' ? (sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />) : <ArrowUpDown size={14} style={{ opacity: 0.3 }} />}
+                </div>
+              </th>
               <th style={{ padding: "0.75rem" }}>E-Mail</th>
               <th style={{ padding: "0.75rem" }}>Klasse</th>
               <th style={{ padding: "0.75rem" }}>Dienstag</th>
@@ -185,7 +243,15 @@ export default function EnrollmentList() {
               <th style={{ padding: "0.75rem" }}>Steuernummer (E)</th>
               <th style={{ padding: "0.75rem" }}>Adresse/Tel</th>
               <th style={{ padding: "0.75rem" }}>Besonderes</th>
-              <th style={{ padding: "0.75rem" }}>Datum</th>
+              <th 
+                onClick={() => handleSort('date')}
+                style={{ padding: "0.75rem", cursor: "pointer", userSelect: "none" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  Datum
+                  {sortField === 'date' ? (sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />) : <ArrowUpDown size={14} style={{ opacity: 0.3 }} />}
+                </div>
+              </th>
               <th style={{ padding: "0.75rem", textAlign: "center" }}>Aktionen</th>
             </tr>
           </thead>
