@@ -32,7 +32,7 @@ export const Footer = () => {
                             { name: 'Impressum', href: '/impressum' },
                             { name: 'Datenschutz', href: 'https://www.sspbruneck1.it/privacy/' },
                             { name: 'Kontakt', href: '/kontakt' },
-                            { name: 'Über mich', href: '/ueber-uns' }
+                            { name: 'Über mich', href: '/ueber-mich' }
                         ].map((link) => (
                             <Link 
                                 key={link.href} 
