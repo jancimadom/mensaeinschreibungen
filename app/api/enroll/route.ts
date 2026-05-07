@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { sendMail } from '@/lib/mail';
 
 export async function POST(req: Request) {
@@ -9,9 +9,9 @@ export async function POST(req: Request) {
 
     // Always save to Firestore if configured
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-      await addDoc(collection(db, 'enrollments'), {
+      await adminDb.collection('enrollments').add({
         ...data,
-        createdAt: serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       });
     }
 

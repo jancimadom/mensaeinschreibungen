@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
+import { getAuth, signInWithCustomToken } from 'firebase/auth';
 import { collection, onSnapshot, query, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Archive, ArchiveRestore, Trash2, Pencil, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import ExportModal from './ExportModal';
@@ -38,6 +39,22 @@ export default function EnrollmentList() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
+    // Zuerst mit Firebase Auth anmelden (Custom Token vom Server holen)
+    const auth = getAuth();
+    const initFirebase = async () => {
+      try {
+        const res = await fetch('/api/auth/firebase-token');
+        if (res.ok) {
+          const { firebaseToken } = await res.json();
+          await signInWithCustomToken(auth, firebaseToken);
+        }
+      } catch (err) {
+        console.error('[EnrollmentList] Firebase Auth failed:', err);
+      }
+      startListener();
+    };
+
+    const startListener = () => {
     try {
       const q = query(collection(db, 'enrollments'));
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -66,6 +83,9 @@ export default function EnrollmentList() {
       setError("Fehler beim Init der DB (" + err.message + ")");
       setLoading(false);
     }
+    }; // end startListener
+
+    initFirebase();
   }, []);
 
   const getOptionLabel = (val: string) => {

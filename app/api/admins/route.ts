@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
 import { auth } from '@/auth';
 
 export async function GET() {
@@ -10,8 +9,8 @@ export async function GET() {
   }
 
   try {
-    const querySnapshot = await getDocs(collection(db, 'admins'));
-    const admins = querySnapshot.docs.map(doc => ({
+    const snapshot = await adminDb.collection('admins').get();
+    const admins = snapshot.docs.map(doc => ({
       id: doc.id,
       email: doc.data().email
     }));
@@ -34,14 +33,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
 
-    // Check if already exists
-    const q = query(collection(db, 'admins'), where('email', '==', email.toLowerCase()));
-    const existing = await getDocs(q);
+    const existing = await adminDb
+      .collection('admins')
+      .where('email', '==', email.toLowerCase())
+      .get();
+
     if (!existing.empty) {
       return NextResponse.json({ error: 'Admin already exists' }, { status: 400 });
     }
 
-    await addDoc(collection(db, 'admins'), {
+    await adminDb.collection('admins').add({
       email: email.toLowerCase(),
       addedBy: session.user.email,
       createdAt: new Date().toISOString()
@@ -66,7 +67,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
     }
 
-    await deleteDoc(doc(db, 'admins', id));
+    await adminDb.collection('admins').doc(id).delete();
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error(err);

@@ -1,7 +1,6 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { adminDb, adminAuth } from "@/lib/firebase-admin";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -16,31 +15,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = profile?.email;
         if (!email) return false;
 
-        // 1. Zuerst die Domain prüfen
+        // 1. Domain prüfen
         const isAllowedDomain = email.endsWith("@sspbruneck1.it");
         if (!isAllowedDomain) return false;
 
-        // 2. Whitelist Prüfung (Statisch & Env)
+        // 2. Statische Whitelist
         const envAdmins = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim().toLowerCase()) : [];
         const codeAdmins: string[] = [
           "jan.cimadom@sspbruneck1.it",
           "erika.innerbichler@sspbruneck1.it",
         ];
-        
         const staticWhitelist = [...envAdmins, ...codeAdmins];
 
         console.log(`[Auth] Sign-in attempt: ${email}`);
 
-        // Wenn in statischer Whitelist, direkt durchlassen
         if (staticWhitelist.includes(email.toLowerCase())) {
           return true;
         }
 
-        // 3. Firestore Whitelist Prüfung (Dynamisch)
+        // 3. Firestore Whitelist (über Admin SDK — sicher, umgeht Regeln)
         try {
-          const q = query(collection(db, 'admins'), where('email', '==', email.toLowerCase()));
-          const querySnapshot = await getDocs(q);
-          if (!querySnapshot.empty) {
+          const snapshot = await adminDb
+            .collection("admins")
+            .where("email", "==", email.toLowerCase())
+            .get();
+          if (!snapshot.empty) {
             console.log(`[Auth] User ${email} found in Firestore admins.`);
             return true;
           }
@@ -52,6 +51,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
       return false;
+    },
+
+    async jwt({ token, account, profile }) {
+      // Beim ersten Login: Firebase Custom Token generieren und im JWT speichern
+      if (account?.provider === "google" && profile?.email) {
+        try {
+          const firebaseToken = await adminAuth.createCustomToken(profile.email);
+          token.firebaseToken = firebaseToken;
+        } catch (err) {
+          console.error("[Auth] Failed to create Firebase custom token:", err);
+        }
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      // Firebase Token an die Client-Session weitergeben
+      if (token.firebaseToken) {
+        (session as any).firebaseToken = token.firebaseToken;
+      }
+      return session;
     },
   }
 })
