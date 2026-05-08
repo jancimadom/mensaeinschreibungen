@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from 'react';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 import { X, Save } from 'lucide-react';
 import { EnrollmentDoc } from './EnrollmentList';
 
@@ -24,13 +22,20 @@ export default function EditEnrollmentModal({ enrollment, onClose }: EditEnrollm
     setSaving(true);
     try {
       const { id, ...updateData } = formData;
-      const ref = doc(db, 'enrollments', id);
-      await updateDoc(ref, updateData);
+      const res = await fetch('/api/admin/enrollments', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updateData }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Speichern fehlgeschlagen');
+      }
       alert("Daten erfolgreich aktualisiert.");
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Update Error:", err);
-      alert("Fehler beim Speichern der Daten.");
+      alert("Fehler beim Speichern: " + err.message);
     } finally {
       setSaving(false);
     }
