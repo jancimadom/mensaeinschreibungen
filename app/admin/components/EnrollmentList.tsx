@@ -48,12 +48,17 @@ export default function EnrollmentList() {
         if (!res.ok) {
           const errBody = await res.json().catch(() => ({}));
           console.error('[EnrollmentList] Token fetch failed:', res.status, errBody);
-          setError(`Authentifizierung fehlgeschlagen (HTTP ${res.status}). Bitte Seite neu laden.`);
+          setError(`Token-Fehler (HTTP ${res.status}): ${errBody.error || 'Unbekannter Fehler'}. Prüfe Vercel-Logs.`);
           setLoading(false);
           return;
         }
-        const { firebaseToken } = await res.json();
-        await signInWithCustomToken(auth, firebaseToken);
+        const body = await res.json();
+        if (!body.firebaseToken) {
+          setError('Server gab keinen Firebase-Token zurück. Prüfe Vercel-Logs.');
+          setLoading(false);
+          return;
+        }
+        await signInWithCustomToken(auth, body.firebaseToken);
         console.log('[EnrollmentList] Firebase Auth erfolgreich.');
       } catch (err) {
         console.error('[EnrollmentList] Firebase Auth failed:', err);
