@@ -63,6 +63,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.error("[Auth] Failed to create Firebase custom token:", err);
         }
       }
+      // Bei jedem JWT-Refresh: bestehenden Firebase Token weiterführen
+      // (ohne das geht er bei Session-Erneuerungen verloren)
       return token;
     },
 
