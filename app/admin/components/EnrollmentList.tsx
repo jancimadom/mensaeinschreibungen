@@ -39,53 +39,63 @@ export default function EnrollmentList() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
-    // Zuerst mit Firebase Auth anmelden (Custom Token vom Server holen)
     const auth = getAuth();
+    let unsubscribeFn: (() => void) | null = null;
+
     const initFirebase = async () => {
       try {
         const res = await fetch('/api/auth/firebase-token');
-        if (res.ok) {
-          const { firebaseToken } = await res.json();
-          await signInWithCustomToken(auth, firebaseToken);
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          console.error('[EnrollmentList] Token fetch failed:', res.status, errBody);
+          setError(`Authentifizierung fehlgeschlagen (HTTP ${res.status}). Bitte Seite neu laden.`);
+          setLoading(false);
+          return;
         }
+        const { firebaseToken } = await res.json();
+        await signInWithCustomToken(auth, firebaseToken);
+        console.log('[EnrollmentList] Firebase Auth erfolgreich.');
       } catch (err) {
         console.error('[EnrollmentList] Firebase Auth failed:', err);
+        setError('Firebase-Anmeldung fehlgeschlagen. Bitte Seite neu laden oder erneut einloggen.');
+        setLoading(false);
+        return;
       }
-      startListener();
+
+      // Erst NACH erfolgreicher Auth den Listener starten
+      try {
+        const q = query(collection(db, 'enrollments'));
+        unsubscribeFn = onSnapshot(q, (snapshot) => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as EnrollmentDoc[];
+          
+          data.sort((a, b) => {
+            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return timeB - timeA;
+          });
+
+          setEnrollments(data);
+          setLoading(false);
+        }, (err) => {
+          console.error("Firestore Error:", err);
+          setError("Fehler beim Laden der Daten (" + err.message + ")");
+          setLoading(false);
+        });
+      } catch (err: any) {
+        console.error(err);
+        setError("Fehler beim Init der DB (" + err.message + ")");
+        setLoading(false);
+      }
     };
 
-    const startListener = () => {
-    try {
-      const q = query(collection(db, 'enrollments'));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const data = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as EnrollmentDoc[];
-        
-        data.sort((a, b) => {
-          const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-          const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-          return timeB - timeA;
-        });
-
-        setEnrollments(data);
-        setLoading(false);
-      }, (err) => {
-        console.error("Firestore Error:", err);
-        setError("Fehler beim Laden der Daten (" + err.message + ")");
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    } catch (err: any) {
-      console.error(err);
-      setError("Fehler beim Init der DB (" + err.message + ")");
-      setLoading(false);
-    }
-    }; // end startListener
-
     initFirebase();
+
+    return () => {
+      if (unsubscribeFn) unsubscribeFn();
+    };
   }, []);
 
   const getOptionLabel = (val: string) => {
