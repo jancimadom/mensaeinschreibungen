@@ -20,6 +20,7 @@ const ALL_FIELDS = [
   { key: 'parentTaxCode', label: 'Steuernummer Elternteil' },
   { key: 'address', label: 'Adresse' },
   { key: 'phone', label: 'Telefon' },
+  { key: 'dietaryNeeds', label: 'Diätanforderungen' },
   { key: 'createdAt', label: 'Eingangsdatum' },
 ];
 

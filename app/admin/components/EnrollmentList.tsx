@@ -101,7 +101,8 @@ export default function EnrollmentList() {
       return e.firstName.toLowerCase().includes(search) ||
              e.lastName.toLowerCase().includes(search) ||
              e.email.toLowerCase().includes(search) ||
-             (e.grade + e.zug).toLowerCase().includes(search);
+             (e.grade + e.zug).toLowerCase().includes(search) ||
+             (e.dietaryNeeds || '').toLowerCase().includes(search);
     })
     .sort((a, b) => {
       if (sortField === 'name') {
@@ -204,7 +205,7 @@ export default function EnrollmentList() {
           <Search size={18} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#64748b" }} />
           <input
             type="text"
-            placeholder="Schüler, E-Mail oder Klasse suchen..."
+            placeholder="Schüler, E-Mail, Klasse oder Diätanforderungen suchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
